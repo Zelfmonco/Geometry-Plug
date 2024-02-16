@@ -1,0 +1,68 @@
+{
+	"geode": "2.0.0-beta.16",
+	"gd": "2.204",
+	"version": "v1.0.0",
+	"id": "zelfmonco.geometryplug",
+	"name": "GeometryPlug",
+	"developer": "Zelfmonco",
+	"description": "Connect your toys to Geometry Dash!",
+
+	"settings": {
+		"death-vibration":{
+			"name": "Death vibration toggle",
+			"description": "Toggle if device will vibrate on death",
+			"type": "bool",
+			"default": true
+		},
+
+		"death-vibration-strength":{
+			"name": "Death vibration strength",
+			"description": "Change the intestity of death vibrations",
+			"type": "int",
+			"default": 25,
+			"min": 1,
+			"max": 100,
+			"control": {
+				"slider": true
+			}
+		},
+
+		"death-vibration-length":{
+			"name": "Death vibration length",
+			"description": "Change the length of the vibration on death",
+			"type": "float",
+			"min": 0.01,
+			"max": 4,
+			"default": 0.2,
+			"control": {
+				"slider": true
+			}
+		},
+		
+		"percentage-vibration":{
+			"name": "Percentage vibration toggle",
+			"description": "Toggle if device will vibrate as the level plays",
+			"type": "bool",
+			"default": false
+		},
+
+		"complete-vibration":{
+			"name": "Complete vibration toggle",
+			"description": "Toggle if the device will vibrate on completetion of the level",
+			"type": "bool",
+			"default": true
+		},
+
+		"complete-vibration-strength":{
+			"name": "Complete vibration strength",
+			"description": "Change the intestity of completion vibrations",
+			"type": "int",
+			"min": 1,
+			"max": 100,
+			"default": 25,
+			"control": {
+				"slider": true
+			}
+		}
+	}
+}

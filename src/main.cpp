@@ -5,8 +5,12 @@
 #include <Geode/modify/MenuLayer.hpp>
 #include <Geode/modify/PlayerObject.hpp>
 #include <Geode/modify/PlayLayer.hpp>
+#include <Geode/modify/EffectGameObject.hpp>
 #include <Geode/cocos/actions/CCActionInterval.h>
 #include <Geode/loader/SettingEvent.hpp>
+#include <Geode/modify/GJBaseGameLayer.hpp>
+#include <string>
+
 #include "../include/buttplugCpp.h"
 
 using namespace geode::prelude;
@@ -18,6 +22,7 @@ std::vector<DeviceClass> myDevices;
 bool IsVibePercent = Mod::get()->getSettingValue<bool>("percentage-vibration");
 bool IsDeathVibe = Mod::get()->getSettingValue<bool>("death-vibration");
 bool IsVibeComplete = Mod::get()->getSettingValue<bool>("complete-vibration");
+bool isVibeShake = Mod::get()->getSettingValue<bool>("shake-vibration");
 bool isConnectedToServer = false;
 bool vibe = false;
 bool isLevelComplete = false;
@@ -31,6 +36,8 @@ int percentage;
 $execute 
 {
 	listenForSettingChanges("death-vibration-strength", +[](int64_t p0) {deathVibeStrength = p0;});
+
+	listenForSettingChanges("shake-vibration", +[](bool p0) {isVibeShake = p0;});
 	
 	listenForSettingChanges("death-vibration", +[](bool p0) {IsDeathVibe = p0;});
 
@@ -206,3 +213,32 @@ class $modify(PlayLayer)
 			StopVibrate();
 	}
 };
+
+
+class $modify (GJBaseGameLayer)
+{
+	void shakeCamera(float p0,float p1, float p2)
+	{	
+		GJBaseGameLayer::shakeCamera(p0, p1, p2);
+
+		if(isVibeShake)
+		{
+			auto pl = PlayLayer::get();
+			float duration = p0;
+			float strength = p1;
+			float interval = p2;
+		
+			if(strength > 5)
+				strength = 5;
+
+			strength = strength / 5 * 100;
+
+			VibratePercent(strength);
+			vibe = true;
+			auto action = pl->runAction(CCSequence::create(CCDelayTime::create(duration), CCCallFunc::create(pl, callfunc_selector(MyPlayerObject::StopVibe)), nullptr));
+		}
+	}
+};
+
+
+//1520 shake trigger ID

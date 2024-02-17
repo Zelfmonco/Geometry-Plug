@@ -38,6 +38,13 @@
 				"slider": true
 			}
 		},
+
+		"shake-vibration":{
+			"name": "Shake vibration toggle",
+			"description": "Toggle if shake triggers vibrate device",
+			"type": "bool",
+			"default": false
+		},
 		
 		"percentage-vibration":{
 			"name": "Percentage vibration toggle",

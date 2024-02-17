@@ -1,15 +1,17 @@
 # GeometryPlug
 
+## Shake trigger update!
+
 Geometry Plug lets you connect your sex toys to Geometry Dash.
 
-This mod is **NOT** standalone and requires external software and hardware which can be found here: https://buttplug.io/
+This mod is NOT standalone and requires external software and hardware which can be found here: https://buttplug.io/
 
-This mod will be updated to add more feature and ensure its functionality.
+This mod requires the Geode mod launcher: https://geode-sdk.org/
+
+This mod will be updated to add more features and ensure its functionality.
 
 Upcoming features:
 
-    - Abiltity to control mutliple devices
+- Ability to control multiple devices
 
-    - Shake trigger support
-
-DM me on discord @zelfmonco if you have questions or comments :3
+If you have questions or comments about the mod join my discord: https://discord.gg/MxbWqBfkhn

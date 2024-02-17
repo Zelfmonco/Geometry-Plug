@@ -14,4 +14,4 @@ Upcoming features:
 
 - Ability to control multiple devices
 
-If you have questions or comments about the mod join my discord: https://discord.gg/MxbWqBfkhn
+If you have questions or comments about the mod join my discord: https://discord.gg/MxbWqBfkhn or dm me @zelfmonco

@@ -193,18 +193,6 @@ class $modify(PlayLayer)
 		isLevelComplete = false;
 	}
 
-	void resume()
-	{
-		PlayLayer::resume();
-
-		if(!IsVibePercent)
-		{
-			float vp = percentage;
-			VibratePercent(vp);
-		}
-		
-	}
-
 	void onExit()
 	{
 		PlayLayer::onExit();

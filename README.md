@@ -14,4 +14,4 @@ Upcoming features:
 
     - Shake trigger support
 
-DM me on discord @zelfmonco if you have questions or comments :3
+If you have questions or comments about the mod join my discord for support: https://discord.gg/MxbWqBfkhn

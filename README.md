@@ -1,3 +1,5 @@
+# INCOMPATIBLE WITH GEOMETRY DASH v2.206
+
 # GeometryPlug
 
 ## Shake trigger update!

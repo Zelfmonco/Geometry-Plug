@@ -1,4 +1,5 @@
 #include "../include/messageHandler.h"
+#include <iostream>
 
 namespace mhl {
 	// Function that handles messages received from server.
@@ -57,6 +58,8 @@ namespace mhl {
 			sensorReading = msg.get<msg::SensorReading>();
 			messageType = mhl::MessageTypes::SensorReading;
 			break;
+		default:
+			break;
 		}
 	}
 
@@ -93,6 +96,8 @@ namespace mhl {
 			break;
 		case mhl::MessageTypes::SensorUnsubscribeCmd:
 			j = req.sensorUnsubscribeCmd;
+			break;
+		default:
 			break;
 		}
 		return j;

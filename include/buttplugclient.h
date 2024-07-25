@@ -1,8 +1,6 @@
 #include <string>
 #include <functional>
-#include <iostream>
 #include <atomic>
-#include <sstream>
 #include <queue>
 #include "../build/_deps/ixwebsocket-src/ixwebsocket/IXWebSocket.h"
 #include "messageHandler.h"

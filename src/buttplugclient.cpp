@@ -1,4 +1,5 @@
 #include "../include/buttplugclient.h"
+#include <iostream>
 
 /*
 	TODO: Let the user access the devices in more details, that is, how many scalar cmds,

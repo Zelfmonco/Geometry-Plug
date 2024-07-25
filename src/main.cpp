@@ -205,7 +205,7 @@ class $modify(PlayLayer)
 class $modify(EffectGameObject) {
 	// GJBaseGameLayer::shakeCamera is inlined on Windows, so we have to detect
 	// a shake trigger like this
-	void triggerObject(GJBaseGameLayer* p0, int p1, const std::vector<int>* p2) {
+	void triggerObject(GJBaseGameLayer* p0, int p1, const gd::vector<int>* p2) {
 		EffectGameObject::triggerObject(p0, p1, p2);
 		if (isVibeShake && this->m_shakeStrength != 0.f && this->m_duration > 0.f) {
 			auto pl = PlayLayer::get();

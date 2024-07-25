@@ -2,8 +2,6 @@
 // or project specific include files.
 
 #pragma once
-
-#include <iostream>
 #include "buttplugclient.h"
 
 // TODO: Reference additional headers your program requires here.

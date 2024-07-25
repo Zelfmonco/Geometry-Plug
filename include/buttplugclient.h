@@ -2,7 +2,7 @@
 #include <functional>
 #include <atomic>
 #include <queue>
-#include "../build/_deps/ixwebsocket-src/ixwebsocket/IXWebSocket.h"
+#include "ixwebsocket/IXWebSocket.h"
 #include "messageHandler.h"
 #include "log.h"
 

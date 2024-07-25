@@ -210,7 +210,12 @@ class $modify(EffectGameObject) {
 		if (isVibeShake && this->m_shakeStrength != 0.f && this->m_duration > 0.f) {
 			auto pl = PlayLayer::get();
 			if (!pl) return;
+#ifdef GEODE_IS_MACOS
+			// FIXME: this may not be m_shakeStrength, i don't have a mac to test this
+			float strength = *reinterpret_cast<float*>(reinterpret_cast<uintptr_t>(this) + 0x5d4);
+#else
 			float strength = this->m_shakeStrength;
+#endif
 
 			// normalize strength to 0-100
 			if (strength > 5.f) strength = 5.f;

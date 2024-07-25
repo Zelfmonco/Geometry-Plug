@@ -207,16 +207,17 @@ class $modify(EffectGameObject) {
 	// a shake trigger like this
 	void triggerObject(GJBaseGameLayer* p0, int p1, const gd::vector<int>* p2) {
 		EffectGameObject::triggerObject(p0, p1, p2);
+		auto pl = PlayLayer::get();
+		if (!pl) return;
 #ifdef GEODE_IS_MACOS
-		// FIXME: this may not be m_shakeStrength, i don't have a mac to test this
-		float strength = *reinterpret_cast<float*>(reinterpret_cast<uintptr_t>(this) + 0x5d4);
+		// FIXME: m_shakeStrength is not defined on mac and i don't have a mac to find the offset,
+		// this is always 0.5f for some reason, i wish it was 5.0f as some kind of
+		// "punishment" for mac users
+		float strength = pl->m_gameState.m_cameraShakeFactor;
 #else
 		float strength = this->m_shakeStrength;
 #endif
 		if (isVibeShake && strength != 0.f && this->m_duration > 0.f) {
-			auto pl = PlayLayer::get();
-			if (!pl) return;
-
 			// normalize strength to 0-100
 			if (strength > 5.f) strength = 5.f;
 			strength = strength / 5.f * 100.f;

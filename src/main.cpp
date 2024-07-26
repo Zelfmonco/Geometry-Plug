@@ -30,6 +30,8 @@ bool isConnectedToServer = false;
 bool vibe = false;
 bool isLevelComplete = false;
 
+bool invertLevelPercentage = Mod::get()->getSettingValue<bool>("invert-level-percentage");
+bool deathVibeWithLevelPercentage = Mod::get()->getSettingValue<bool>("death-vibration-with-level-percentage");
 float deathVibeStrength = Mod::get()->getSettingValue<int64_t>("death-vibration-strength");
 float deathVibeLength = Mod::get()->getSettingValue<double>("death-vibration-length");
 float completeVibeStrength = Mod::get()->getSettingValue<int64_t>("complete-vibration-strength");
@@ -72,19 +74,23 @@ $execute
 		clientReconnect();
 	});
 
-	listenForSettingChanges("death-vibration-strength", +[](int64_t p0) {deathVibeStrength = p0;});
+	listenForSettingChanges("invert-level-percentage", +[](bool p0) { invertLevelPercentage = p0; });
 
-	listenForSettingChanges("shake-vibration", +[](bool p0) {isVibeShake = p0;});
+	listenForSettingChanges("death-vibration-with-level-percentage", +[](bool p0) { deathVibeWithLevelPercentage = p0; });
+
+	listenForSettingChanges("death-vibration-strength", +[](int64_t p0) { deathVibeStrength = p0; });
+
+	listenForSettingChanges("shake-vibration", +[](bool p0) { isVibeShake = p0; });
 	
-	listenForSettingChanges("death-vibration", +[](bool p0) {IsDeathVibe = p0;});
+	listenForSettingChanges("death-vibration", +[](bool p0) { IsDeathVibe = p0; });
 
-	listenForSettingChanges("percentage-vibration", +[](bool p0) {IsVibePercent = p0;});
+	listenForSettingChanges("percentage-vibration", +[](bool p0) { IsVibePercent = p0; });
 
-	listenForSettingChanges("complete-vibration", +[](bool p0) {IsVibeComplete = p0;});
+	listenForSettingChanges("complete-vibration", +[](bool p0) { IsVibeComplete = p0; });
 
-	listenForSettingChanges("death-vibration-length", +[](double p0) {deathVibeLength = p0;});
+	listenForSettingChanges("death-vibration-length", +[](double p0) { deathVibeLength = p0; });
 
-	listenForSettingChanges("complete-vibration-strength", +[](double p0) {completeVibeStrength = p0;});
+	listenForSettingChanges("complete-vibration-strength", +[](double p0) { completeVibeStrength = p0; });
 }
 
 
@@ -106,7 +112,7 @@ void VibratePercent(float per)
 	if(myDevices.size() == 0)
 		return;
 	
-	client.sendScalar(myDevices[0], per / 100);
+	client.sendScalar(myDevices[0], per / 100.f);
 	vibe = true;
 };
 
@@ -160,7 +166,14 @@ class $modify(MyPlayerObject, PlayerObject)
 		if(IsDeathVibe)
 		{
 			auto pl = PlayLayer::get();
-			VibratePercent(deathVibeStrength);
+			if (!pl) return;
+
+			if (deathVibeWithLevelPercentage) {
+				VibratePercent(invertLevelPercentage ? 100.f - pl->getCurrentPercent() : pl->getCurrentPercent());
+			} else {
+				VibratePercent(deathVibeStrength);
+			}
+
 			vibe = true;
 			auto action = pl->runAction(CCSequence::create(CCDelayTime::create(deathVibeLength), CCCallFunc::create(pl, callfunc_selector(MyPlayerObject::StopVibe)), nullptr));
 		}

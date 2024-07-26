@@ -42,6 +42,20 @@
       "default": true
     },
 
+    "death-vibration-with-level-percentage": {
+      "name": "Death vibration with level percentage",
+      "description": "Changes the death vibration strength based on the level percentage. Replaces the death vibration strength setting",
+      "type": "bool",
+      "default": false
+    },
+
+    "invert-level-percentage": {
+      "name": "Invert level percentage",
+      "description": "Inverts the level percentage for death vibration (100% = 0%, 0% = 100%). Only applies if the above setting is enabled",
+      "type": "bool",
+      "default": false
+    },
+
     "death-vibration-strength": {
       "name": "Death vibration strength",
       "description": "Change the intestity of death vibrations",

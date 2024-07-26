@@ -1,6 +1,7 @@
 #include "../include/buttplugclient.h"
-#include <iostream>
-#include <sstream>
+
+#include <Geode/Geode.hpp>
+using namespace geode::prelude;
 
 /*
 	TODO: Let the user access the devices in more details, that is, how many scalar cmds,
@@ -12,9 +13,8 @@
 
 
 // Connection function with a function parameter which acts as a callback.
-int Client::connect(void (*callFunc)(const mhl::Messages)) {
-	FullUrl = lUrl + ":" + std::to_string(lPort);
-
+void Client::connect(void (*callFunc)(const mhl::Messages)) {
+	std::string FullUrl = lUrl + ":" + std::to_string(lPort);
 	webSocket.setUrl(FullUrl);
 
 	// Ping interval option.
@@ -39,8 +39,25 @@ int Client::connect(void (*callFunc)(const mhl::Messages)) {
 
 	// Connect to server, specifically send a RequestServerInfo
 	connectServer();
+}
 
-	return 0;
+void Client::disconnect() {
+	std::lock_guard<std::mutex> lock{msgMx};
+
+	// Set atomic variable that websocket is connected to false.
+	wsConnected = false;
+	condWs.notify_all();
+
+	// Set atomic variable that client is connected to false.
+	clientConnected = false;
+	condClient.notify_all();
+
+	// Set atomic variable that client is connected to false.
+	isConnecting = false;
+	cond.notify_all();
+
+	// Close websocket.
+	webSocket.stop();
 }
 
 // Websocket callback function.
@@ -59,23 +76,21 @@ void Client::callbackFunction(const ix::WebSocketMessagePtr& msg) {
 	// Handle websocket errors.
 	if (msg->type == ix::WebSocketMessageType::Error)
 	{
-		std::stringstream ss;
-		ss << "Error: " << msg->errorInfo.reason << std::endl;
-		ss << "#retries: " << msg->errorInfo.retries << std::endl;
-		ss << "Wait time(ms): " << msg->errorInfo.wait_time << std::endl;
-		ss << "HTTP Status: " << msg->errorInfo.http_status << std::endl;
-		std::cout << ss.str() << std::endl;
+		log::error("Error: {}", msg->errorInfo.reason);
+		log::error("#retries: {}", msg->errorInfo.retries);
+		log::error("Wait time(ms): {}", msg->errorInfo.wait_time);
+		log::error("HTTP Status: {}", msg->errorInfo.http_status);
 	}
 
 	// Set atomic variable that websocket is connected once it is open.
 	if (msg->type == ix::WebSocketMessageType::Open) {
-		wsConnected = 1;
+		wsConnected = true;
 		condWs.notify_all();
 	}
 	
 	// Set atomic variable that websocket is not connected if socket closes.
 	if (msg->type == ix::WebSocketMessageType::Close) {
-		wsConnected = 0;
+		wsConnected = false;
 	}
 }
 
@@ -93,7 +108,7 @@ void Client::startScan() {
 
 	// Convert the returned handled request message class to json.
 	json j = json::array({ messageHandler.handleClientRequest(req) });
-	std::cout << j << std::endl;
+	log::debug("{}", j.dump());
 
 	// Start a thread that sends the message.
 	std::thread sendHandler(&Client::sendMessage, this, j, messageHandler.messageType);
@@ -109,7 +124,7 @@ void Client::stopScan() {
 	messageHandler.messageType = mhl::MessageTypes::StopScanning;
 
 	json j = json::array({ messageHandler.handleClientRequest(req) });
-	std::cout << j << std::endl;
+	log::debug("{}", j.dump());
 
 	std::thread sendHandler(&Client::sendMessage, this, j, messageHandler.messageType);
 	sendHandler.detach();
@@ -124,7 +139,7 @@ void Client::requestDeviceList() {
 	messageHandler.messageType = mhl::MessageTypes::RequestDeviceList;
 
 	json j = json::array({ messageHandler.handleClientRequest(req) });
-	std::cout << j << std::endl;
+	log::debug("{}", j.dump());
 
 	std::thread sendHandler(&Client::sendMessage, this, j, messageHandler.messageType);
 	sendHandler.detach();
@@ -141,7 +156,7 @@ void Client::connectServer() {
 	messageHandler.messageType = mhl::MessageTypes::RequestServerInfo;
 
 	json j = json::array({ messageHandler.handleClientRequest(req) });
-	std::cout << j << std::endl;
+	log::debug("{}", j.dump());
 
 	std::thread sendHandler(&Client::sendMessage, this, j, messageHandler.messageType);
 	sendHandler.detach();
@@ -151,32 +166,32 @@ void Client::connectServer() {
 void Client::sendMessage(json msg, mhl::MessageTypes mType) {
 	// First check whether a connection process is started.
 	if (!isConnecting && !wsConnected) {
-		std::cout << "Client is not connected and not started, start before sending a message" << std::endl;
+		log::error("Client is not connected and not started, start before sending a message");
 		return;
 	}
 	// If started, wait for the socket to connect first.
 	if (!wsConnected && isConnecting) {
 		std::unique_lock<std::mutex> lock{msgMx};
-		DEBUG_MSG("Waiting for socket to connect");
-		auto wsConnStatus = [this]() {return wsConnected == 1; };
+		log::debug("Waiting for socket to connect");
+		auto wsConnStatus = [this]() { return wsConnected == 1; };
 		condWs.wait(lock, wsConnStatus);
-		std::cout << "Connected to socket" << std::endl;
+		log::info("Connected to socket");
 		//webSocket.send(msg.dump());
 	}
 	// Once socket is connected, either wait for client to connect, or send a message if the message type
 	// is a request server info, since this is our client connection message.
 	if (!clientConnected && isConnecting) {
-		std::cout << "Waiting for client to connect" << std::endl;
+		log::info("Waiting for client to connect");
 		if (mType == mhl::MessageTypes::RequestServerInfo) {
 			webSocket.send(msg.dump());
 			if (logging) logInfo.logSentMessage("RequestServerInfo", static_cast<unsigned int>(mType));
-			std::cout << "Started connection to client" << std::endl;
+			log::info("Started connection to client");
 			return;
 		}
 		std::unique_lock<std::mutex> lock{msgMx};
 		auto clientConnStatus = [this]() {return clientConnected == 1; };
 		condClient.wait(lock, clientConnStatus);
-		std::cout << "Connected to client" << std::endl;
+		log::info("Connected to client");
 		webSocket.send(msg.dump());
 	}
 	// If everything is connected, simply send message and log request if enabled.
@@ -239,7 +254,7 @@ void Client::stopDevice(DeviceClass dev) {
 	messageHandler.messageType = mhl::MessageTypes::StopDeviceCmd;
 
 	json j = json::array({ messageHandler.handleClientRequest(req) });
-	std::cout << j << std::endl;
+	log::debug("{}", j.dump());
 
 	std::thread sendHandler(&Client::sendMessage, this, j, messageHandler.messageType);
 	sendHandler.detach();
@@ -254,7 +269,7 @@ void Client::stopAllDevices() {
 	messageHandler.messageType = mhl::MessageTypes::StopAllDevices;
 
 	json j = json::array({ messageHandler.handleClientRequest(req) });
-	std::cout << j << std::endl;
+	log::debug("{}", j.dump());
 
 	std::thread sendHandler(&Client::sendMessage, this, j, messageHandler.messageType);
 	sendHandler.detach();
@@ -283,7 +298,7 @@ void Client::sendScalar(DeviceClass dev, double str) {
 				messageHandler.messageType = mhl::MessageTypes::ScalarCmd;
 
 				json j = json::array({ messageHandler.handleClientRequest(req) });
-				std::cout << j << std::endl;
+				log::debug("{}", j.dump());
 
 				std::thread sendHandler(&Client::sendMessage, this, j, messageHandler.messageType);
 				sendHandler.detach();
@@ -309,7 +324,7 @@ void Client::sensorRead(DeviceClass dev, int senIndex) {
 				messageHandler.messageType = mhl::MessageTypes::SensorReadCmd;
 
 				json j = json::array({ messageHandler.handleClientRequest(req) });
-				std::cout << j << std::endl;
+				log::debug("{}", j.dump());
 
 				std::thread sendHandler(&Client::sendMessage, this, j, messageHandler.messageType);
 				sendHandler.detach();
@@ -335,7 +350,7 @@ void Client::sensorSubscribe(DeviceClass dev, int senIndex) {
 				messageHandler.messageType = mhl::MessageTypes::SensorSubscribeCmd;
 
 				json j = json::array({ messageHandler.handleClientRequest(req) });
-				std::cout << j << std::endl;
+				log::debug("{}", j.dump());
 
 				std::thread sendHandler(&Client::sendMessage, this, j, messageHandler.messageType);
 				sendHandler.detach();
@@ -361,7 +376,7 @@ void Client::sensorUnsubscribe(DeviceClass dev, int senIndex) {
 				messageHandler.messageType = mhl::MessageTypes::SensorUnsubscribeCmd;
 
 				json j = json::array({ messageHandler.handleClientRequest(req) });
-				std::cout << j << std::endl;
+				log::debug("{}", j.dump());
 
 				std::thread sendHandler(&Client::sendMessage, this, j, messageHandler.messageType);
 				sendHandler.detach();
@@ -373,17 +388,20 @@ void Client::sensorUnsubscribe(DeviceClass dev, int senIndex) {
 // Message handling function.
 // TODO: add client disconnect which stops this thread too.
 void Client::messageHandling() {
-	// Start infinite loop.
-	while (1) {
+	// Loop through messages in queue.
+	while (wsConnected) {
 		std::unique_lock<std::mutex> lock{msgMx};
 
 		// A lambda that waits to receive messages in the queue.
 		cond.wait(
 			lock,
 			[this] {
-				return !q.empty();
+				return !q.empty() || !wsConnected;
 			}
 		);
+
+		// If disconnected, break out of loop.
+		if (!wsConnected) break;
 
 		// If received, grab the message and pop it out.
 		std::string value = q.front();
@@ -419,7 +437,6 @@ void Client::messageHandling() {
 		}
 
 		lock.unlock();
-
-		std::cout << "[subscriber] Received " << value << std::endl;
+		log::debug("[subscriber] Received {}", value);
 	}
 }

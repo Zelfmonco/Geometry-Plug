@@ -12,11 +12,48 @@
   "description": "Connect your toys to Geometry Dash!",
 
   "settings": {
+    "server-url": {
+      "name": "Server URL",
+      "description": "Change the server URL. Must start with ws:// or wss://",
+      "type": "string",
+      "default": "ws://127.0.0.1",
+      "control": {
+        "text": true
+      }
+    },
+
+    "server-port": {
+      "name": "Server Port",
+      "description": "Change the server port",
+      "type": "int",
+      "default": 12345,
+      "min": 0,
+      "max": 65535,
+      "control": {
+        "text": true,
+        "slider": false
+      }
+    },
+
     "death-vibration": {
       "name": "Death vibration toggle",
       "description": "Toggle if device will vibrate on death",
       "type": "bool",
       "default": true
+    },
+
+    "death-vibration-with-level-percentage": {
+      "name": "Death vibration with level percentage",
+      "description": "Changes the death vibration strength based on the level percentage. Replaces the death vibration strength setting",
+      "type": "bool",
+      "default": false
+    },
+
+    "invert-level-percentage": {
+      "name": "Invert level percentage",
+      "description": "Inverts the level percentage for death vibration (100% = 0%, 0% = 100%). Only applies if the above setting is enabled",
+      "type": "bool",
+      "default": false
     },
 
     "death-vibration-strength": {

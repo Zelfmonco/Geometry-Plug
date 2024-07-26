@@ -15,8 +15,11 @@
 
 using namespace geode::prelude;
 
-std::string url = "ws://127.0.0.1";
-Client client(url, 12345, "test.txt");
+Client client(
+	Mod::get()->getSettingValue<std::string>("server-url"),
+	std::max<int64_t>(Mod::get()->getSettingValue<int64_t>("server-port"), 0),
+	"test.txt"
+);
 std::vector<DeviceClass> myDevices;
 
 bool IsVibePercent = Mod::get()->getSettingValue<bool>("percentage-vibration");
@@ -27,48 +30,69 @@ bool isConnectedToServer = false;
 bool vibe = false;
 bool isLevelComplete = false;
 
+bool invertLevelPercentage = Mod::get()->getSettingValue<bool>("invert-level-percentage");
+bool deathVibeWithLevelPercentage = Mod::get()->getSettingValue<bool>("death-vibration-with-level-percentage");
 float deathVibeStrength = Mod::get()->getSettingValue<int64_t>("death-vibration-strength");
 float deathVibeLength = Mod::get()->getSettingValue<double>("death-vibration-length");
 float completeVibeStrength = Mod::get()->getSettingValue<int64_t>("complete-vibration-strength");
 
 int percentage;
 
-$execute 
-{
-	listenForSettingChanges("death-vibration-strength", +[](int64_t p0) {deathVibeStrength = p0;});
-
-	listenForSettingChanges("shake-vibration", +[](bool p0) {isVibeShake = p0;});
-	
-	listenForSettingChanges("death-vibration", +[](bool p0) {IsDeathVibe = p0;});
-
-	listenForSettingChanges("percentage-vibration", +[](bool p0) {IsVibePercent = p0;});
-
-	listenForSettingChanges("complete-vibration", +[](bool p0) {IsVibeComplete = p0;});
-
-	listenForSettingChanges("death-vibration-length", +[](double p0) {deathVibeLength = p0;});
-
-	listenForSettingChanges("complete-vibration-strength", +[](double p0) {completeVibeStrength = p0;});
-}
-
-using namespace std;
-
 void callbackFunction(const mhl::Messages msg) {
 	if (msg.messageType == mhl::MessageTypes::DeviceList) {
-		cout << "Device List callback" << endl;
+		log::debug("Device List callback");
 	}
 	if (msg.messageType == mhl::MessageTypes::DeviceAdded) {
-		cout << "Device Added callback" << endl;
+		log::debug("Device Added callback");
 	}
 	if (msg.messageType == mhl::MessageTypes::ServerInfo) {
-		cout << "Server Info callback" << endl;
+		log::debug("Server Info callback");
 	}
 	if (msg.messageType == mhl::MessageTypes::DeviceRemoved) {
-		cout << "Device Removed callback" << endl;
+		log::debug("Device Removed callback");
 	}
 	if (msg.messageType == mhl::MessageTypes::SensorReading) {
-		cout << "Sensor Reading callback" << endl;
+		log::debug("Sensor Reading callback");
 	}
 };
+
+void clientReconnect() {
+	client.stopAllDevices();
+	client.disconnect();
+	client.connect(callbackFunction);
+}
+
+$execute 
+{
+	listenForSettingChanges("server-url", +[](std::string p0) {
+		client.setUrl(p0);
+		clientReconnect();
+	});
+
+	listenForSettingChanges("server-port", +[](int64_t p0) {
+		client.setPort(std::max<int64_t>(p0, 0));
+		clientReconnect();
+	});
+
+	listenForSettingChanges("invert-level-percentage", +[](bool p0) { invertLevelPercentage = p0; });
+
+	listenForSettingChanges("death-vibration-with-level-percentage", +[](bool p0) { deathVibeWithLevelPercentage = p0; });
+
+	listenForSettingChanges("death-vibration-strength", +[](int64_t p0) { deathVibeStrength = p0; });
+
+	listenForSettingChanges("shake-vibration", +[](bool p0) { isVibeShake = p0; });
+	
+	listenForSettingChanges("death-vibration", +[](bool p0) { IsDeathVibe = p0; });
+
+	listenForSettingChanges("percentage-vibration", +[](bool p0) { IsVibePercent = p0; });
+
+	listenForSettingChanges("complete-vibration", +[](bool p0) { IsVibeComplete = p0; });
+
+	listenForSettingChanges("death-vibration-length", +[](double p0) { deathVibeLength = p0; });
+
+	listenForSettingChanges("complete-vibration-strength", +[](double p0) { completeVibeStrength = p0; });
+}
+
 
 //connects to server
 int main()
@@ -88,7 +112,7 @@ void VibratePercent(float per)
 	if(myDevices.size() == 0)
 		return;
 	
-	client.sendScalar(myDevices[0], per / 100);
+	client.sendScalar(myDevices[0], per / 100.f);
 	vibe = true;
 };
 
@@ -101,9 +125,6 @@ void StopVibrate()
 	client.stopDevice(myDevices[0]);
 	vibe = false;
 };
-
-using namespace geode::prelude;
-
 
 class $modify(MenuLayer) 
 {
@@ -145,7 +166,14 @@ class $modify(MyPlayerObject, PlayerObject)
 		if(IsDeathVibe)
 		{
 			auto pl = PlayLayer::get();
-			VibratePercent(deathVibeStrength);
+			if (!pl) return;
+
+			if (deathVibeWithLevelPercentage) {
+				VibratePercent(invertLevelPercentage ? 100.f - pl->getCurrentPercent() : pl->getCurrentPercent());
+			} else {
+				VibratePercent(deathVibeStrength);
+			}
+
 			vibe = true;
 			auto action = pl->runAction(CCSequence::create(CCDelayTime::create(deathVibeLength), CCCallFunc::create(pl, callfunc_selector(MyPlayerObject::StopVibe)), nullptr));
 		}

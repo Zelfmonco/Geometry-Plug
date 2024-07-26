@@ -36,24 +36,21 @@ float completeVibeStrength = Mod::get()->getSettingValue<int64_t>("complete-vibr
 
 int percentage;
 
-using namespace std;
-using namespace geode::prelude;
-
 void callbackFunction(const mhl::Messages msg) {
 	if (msg.messageType == mhl::MessageTypes::DeviceList) {
-		cout << "Device List callback" << endl;
+		log::debug("Device List callback");
 	}
 	if (msg.messageType == mhl::MessageTypes::DeviceAdded) {
-		cout << "Device Added callback" << endl;
+		log::debug("Device Added callback");
 	}
 	if (msg.messageType == mhl::MessageTypes::ServerInfo) {
-		cout << "Server Info callback" << endl;
+		log::debug("Server Info callback");
 	}
 	if (msg.messageType == mhl::MessageTypes::DeviceRemoved) {
-		cout << "Device Removed callback" << endl;
+		log::debug("Device Removed callback");
 	}
 	if (msg.messageType == mhl::MessageTypes::SensorReading) {
-		cout << "Sensor Reading callback" << endl;
+		log::debug("Sensor Reading callback");
 	}
 };
 

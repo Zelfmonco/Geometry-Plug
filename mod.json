@@ -17,7 +17,7 @@
       "description": "Change the server URL. Must start with ws:// or wss://",
       "type": "string",
       "default": "ws://127.0.0.1",
-      "filter": "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.-_~!+,*:@",
+      "filter": "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.-_~:/?#[]@!$&'()*+,;=",
       "control": {
         "text": true
       }

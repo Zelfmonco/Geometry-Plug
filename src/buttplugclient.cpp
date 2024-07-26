@@ -440,12 +440,5 @@ void Client::messageHandling() {
 		lock.unlock();
 
 		std::cout << "[subscriber] Received " << value << std::endl;
-
-		// If not connected, stop the loop.
-		if (!wsConnected) {
-			isConnecting = 0;
-			clientConnected = 0;
-			break;
-		}
 	}
 }

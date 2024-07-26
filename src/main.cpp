@@ -239,7 +239,7 @@ class $modify(EffectGameObject) {
 		if (!pl) return;
 
 #ifdef GEODE_IS_MACOS
-		float strength = *reinterpret_cast<float*>(this + 0x5c4)
+		float strength = *reinterpret_cast<float*>(this + 0x5c4);
 #else
 		float strength = this->m_shakeStrength;
 #endif

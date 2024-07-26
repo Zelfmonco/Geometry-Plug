@@ -15,8 +15,11 @@
 
 using namespace geode::prelude;
 
-std::string url = "ws://127.0.0.1";
-Client client(url, 12345, "test.txt");
+Client client(
+	Mod::get()->getSettingValue<std::string>("server-url"),
+	std::max<int64_t>(Mod::get()->getSettingValue<int64_t>("server-port"), 0),
+	"test.txt"
+);
 std::vector<DeviceClass> myDevices;
 
 bool IsVibePercent = Mod::get()->getSettingValue<bool>("percentage-vibration");
@@ -33,24 +36,8 @@ float completeVibeStrength = Mod::get()->getSettingValue<int64_t>("complete-vibr
 
 int percentage;
 
-$execute 
-{
-	listenForSettingChanges("death-vibration-strength", +[](int64_t p0) {deathVibeStrength = p0;});
-
-	listenForSettingChanges("shake-vibration", +[](bool p0) {isVibeShake = p0;});
-	
-	listenForSettingChanges("death-vibration", +[](bool p0) {IsDeathVibe = p0;});
-
-	listenForSettingChanges("percentage-vibration", +[](bool p0) {IsVibePercent = p0;});
-
-	listenForSettingChanges("complete-vibration", +[](bool p0) {IsVibeComplete = p0;});
-
-	listenForSettingChanges("death-vibration-length", +[](double p0) {deathVibeLength = p0;});
-
-	listenForSettingChanges("complete-vibration-strength", +[](double p0) {completeVibeStrength = p0;});
-}
-
 using namespace std;
+using namespace geode::prelude;
 
 void callbackFunction(const mhl::Messages msg) {
 	if (msg.messageType == mhl::MessageTypes::DeviceList) {
@@ -69,6 +56,40 @@ void callbackFunction(const mhl::Messages msg) {
 		cout << "Sensor Reading callback" << endl;
 	}
 };
+
+void clientReconnect() {
+	client.stopAllDevices();
+	client.disconnect();
+	client.connect(callbackFunction);
+}
+
+$execute 
+{
+	listenForSettingChanges("server-url", +[](std::string p0) {
+		client.setUrl(p0);
+		clientReconnect();
+	});
+
+	listenForSettingChanges("server-port", +[](int64_t p0) {
+		client.setPort(std::max<int64_t>(p0, 0));
+		clientReconnect();
+	});
+
+	listenForSettingChanges("death-vibration-strength", +[](int64_t p0) {deathVibeStrength = p0;});
+
+	listenForSettingChanges("shake-vibration", +[](bool p0) {isVibeShake = p0;});
+	
+	listenForSettingChanges("death-vibration", +[](bool p0) {IsDeathVibe = p0;});
+
+	listenForSettingChanges("percentage-vibration", +[](bool p0) {IsVibePercent = p0;});
+
+	listenForSettingChanges("complete-vibration", +[](bool p0) {IsVibeComplete = p0;});
+
+	listenForSettingChanges("death-vibration-length", +[](double p0) {deathVibeLength = p0;});
+
+	listenForSettingChanges("complete-vibration-strength", +[](double p0) {completeVibeStrength = p0;});
+}
+
 
 //connects to server
 int main()
@@ -101,9 +122,6 @@ void StopVibrate()
 	client.stopDevice(myDevices[0]);
 	vibe = false;
 };
-
-using namespace geode::prelude;
-
 
 class $modify(MenuLayer) 
 {

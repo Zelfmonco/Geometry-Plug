@@ -12,9 +12,8 @@
 
 
 // Connection function with a function parameter which acts as a callback.
-int Client::connect(void (*callFunc)(const mhl::Messages)) {
-	FullUrl = lUrl + ":" + std::to_string(lPort);
-
+void Client::connect(void (*callFunc)(const mhl::Messages)) {
+	std::string FullUrl = lUrl + ":" + std::to_string(lPort);
 	webSocket.setUrl(FullUrl);
 
 	// Ping interval option.
@@ -39,8 +38,25 @@ int Client::connect(void (*callFunc)(const mhl::Messages)) {
 
 	// Connect to server, specifically send a RequestServerInfo
 	connectServer();
+}
 
-	return 0;
+void Client::disconnect() {
+	std::lock_guard<std::mutex> lock{msgMx};
+
+	// Set atomic variable that websocket is connected to false.
+	wsConnected = false;
+	condWs.notify_all();
+
+	// Set atomic variable that client is connected to false.
+	clientConnected = false;
+	condClient.notify_all();
+
+	// Set atomic variable that client is connected to false.
+	isConnecting = false;
+	cond.notify_all();
+
+	// Close websocket.
+	webSocket.stop();
 }
 
 // Websocket callback function.
@@ -69,13 +85,13 @@ void Client::callbackFunction(const ix::WebSocketMessagePtr& msg) {
 
 	// Set atomic variable that websocket is connected once it is open.
 	if (msg->type == ix::WebSocketMessageType::Open) {
-		wsConnected = 1;
+		wsConnected = true;
 		condWs.notify_all();
 	}
 	
 	// Set atomic variable that websocket is not connected if socket closes.
 	if (msg->type == ix::WebSocketMessageType::Close) {
-		wsConnected = 0;
+		wsConnected = false;
 	}
 }
 
@@ -373,17 +389,20 @@ void Client::sensorUnsubscribe(DeviceClass dev, int senIndex) {
 // Message handling function.
 // TODO: add client disconnect which stops this thread too.
 void Client::messageHandling() {
-	// Start infinite loop.
-	while (1) {
+	// Loop through messages in queue.
+	while (wsConnected) {
 		std::unique_lock<std::mutex> lock{msgMx};
 
 		// A lambda that waits to receive messages in the queue.
 		cond.wait(
 			lock,
 			[this] {
-				return !q.empty();
+				return !q.empty() || !wsConnected;
 			}
 		);
+
+		// If disconnected, break out of loop.
+		if (!wsConnected) break;
 
 		// If received, grab the message and pop it out.
 		std::string value = q.front();
@@ -421,5 +440,12 @@ void Client::messageHandling() {
 		lock.unlock();
 
 		std::cout << "[subscriber] Received " << value << std::endl;
+
+		// If not connected, stop the loop.
+		if (!wsConnected) {
+			isConnecting = 0;
+			clientConnected = 0;
+			break;
+		}
 	}
 }

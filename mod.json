@@ -1,5 +1,5 @@
 {
-  "geode": "3.3.1",
+  "geode": "3.3.0",
   "gd": {
     "win": "2.206",
     "android": "2.206",
@@ -12,6 +12,29 @@
   "description": "Connect your toys to Geometry Dash!",
 
   "settings": {
+    "server-url": {
+      "name": "Server URL",
+      "description": "Change the server URL. Must start with ws:// or wss://",
+      "type": "string",
+      "default": "ws://127.0.0.1",
+      "control": {
+        "text": true
+      }
+    },
+
+    "server-port": {
+      "name": "Server Port",
+      "description": "Change the server port",
+      "type": "int",
+      "default": 12345,
+      "min": 0,
+      "max": 65535,
+      "control": {
+        "text": true,
+        "slider": false
+      }
+    },
+
     "death-vibration": {
       "name": "Death vibration toggle",
       "description": "Toggle if device will vibrate on death",

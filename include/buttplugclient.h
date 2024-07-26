@@ -37,11 +37,13 @@ public:
 
 	}
 
-	int connect(void (*callFunc)(const mhl::Messages));
+	void connect(void (*callFunc)(const mhl::Messages));
+	void disconnect();
+	
 	// Atomic variables to store connection status. Can be accessed outside library too since atomic.
-	std::atomic<int> wsConnected{0};
-	std::atomic<int> isConnecting{0};
-	std::atomic<int> clientConnected{0};
+	std::atomic<bool> wsConnected{false};
+	std::atomic<bool> isConnecting{false};
+	std::atomic<bool> clientConnected{false};
 	// Condition variables for the atomics, we want C++11 support
 	std::condition_variable condClient;
 	std::condition_variable condWs;
@@ -57,12 +59,15 @@ public:
 	void sensorSubscribe(DeviceClass dev, int senIndex);
 	void sensorUnsubscribe(DeviceClass dev, int senIndex);
 
+	// Setters
+	void setUrl(std::string url) { lUrl = url; }
+	void setPort(unsigned int port) { lPort = port; }
+
 	// Mutex blocked function which grabs the currently connected devices and sensor reads.
 	std::vector<DeviceClass> getDevices();
 	SensorClass getSensors();
 private:
-	// URL variables for the websocket.
-	std::string FullUrl;
+	// URL variables for the websocket. 
 	std::string lUrl;
 	unsigned int lPort;
 

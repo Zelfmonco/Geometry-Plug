@@ -1,6 +1,5 @@
 //Geometry Plug main file
 
-#include <future>
 #include <Geode/Geode.hpp>
 #include <Geode/modify/MenuLayer.hpp>
 #include <Geode/modify/PlayerObject.hpp>
@@ -9,6 +8,7 @@
 #include <Geode/cocos/actions/CCActionInterval.h>
 #include <Geode/loader/SettingEvent.hpp>
 #include <Geode/modify/GJBaseGameLayer.hpp>
+#include <Geode/modify/EffectGameObject.hpp>
 #include <string>
 
 #include "../include/buttplugCpp.h"
@@ -128,7 +128,7 @@ class $modify(MyPlayerObject, PlayerObject)
 	void StopVibe()
 	{
 		if(myDevices.size() == 0)
-		return;
+			return;
 
 		client.stopDevice(myDevices [0]);
 		vibe = false;
@@ -202,31 +202,34 @@ class $modify(PlayLayer)
 	}
 };
 
-
-class $modify (GJBaseGameLayer)
-{
-	void shakeCamera(float p0,float p1, float p2)
-	{	
-		GJBaseGameLayer::shakeCamera(p0, p1, p2);
-
-		if(isVibeShake)
-		{
-			auto pl = PlayLayer::get();
-			float duration = p0;
-			float strength = p1;
-			float interval = p2;
-		
-			if(strength > 5)
-				strength = 5;
-
-			strength = strength / 5 * 100;
+class $modify(EffectGameObject) {
+	// GJBaseGameLayer::shakeCamera is inlined on Windows, so we have to detect
+	// a shake trigger like this
+	void triggerObject(GJBaseGameLayer* p0, int p1, const gd::vector<int>* p2) {
+		EffectGameObject::triggerObject(p0, p1, p2);
+		auto pl = PlayLayer::get();
+		if (!pl) return;
+#ifdef GEODE_IS_MACOS
+		// FIXME: m_shakeStrength is not defined on mac and i don't have a mac to find the offset,
+		// this is always 0.5f for some reason, i wish it was 5.0f as some kind of
+		// "punishment" for mac users
+		float strength = pl->m_gameState.m_cameraShakeFactor;
+#else
+		float strength = this->m_shakeStrength;
+#endif
+		if (isVibeShake && strength != 0.f && this->m_duration > 0.f) {
+			// normalize strength to 0-100
+			if (strength > 5.f) strength = 5.f;
+			strength = strength / 5.f * 100.f;
 
 			VibratePercent(strength);
 			vibe = true;
-			auto action = pl->runAction(CCSequence::create(CCDelayTime::create(duration), CCCallFunc::create(pl, callfunc_selector(MyPlayerObject::StopVibe)), nullptr));
+
+			pl->runAction(CCSequence::create(
+				CCDelayTime::create(this->m_duration),
+				CCCallFunc::create(pl, callfunc_selector(MyPlayerObject::StopVibe)),
+				nullptr
+			));
 		}
 	}
 };
-
-
-//1520 shake trigger ID

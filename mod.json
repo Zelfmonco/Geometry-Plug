@@ -1,75 +1,79 @@
 {
-	"geode": "2.0.0-beta.16",
-	"gd": "2.204",
-	"version": "v1.0.0-beta.4",
-	"id": "zelfmonco.geometryplug",
-	"name": "GeometryPlug",
-	"developer": "Zelfmonco",
-	"description": "Connect your toys to Geometry Dash!",
+  "geode": "3.3.1",
+  "gd": {
+    "win": "2.206",
+    "android": "2.206",
+    "mac": "2.206"
+  },
+  "version": "v1.0.0-beta.5",
+  "id": "zelfmonco.geometryplug",
+  "name": "GeometryPlug",
+  "developer": "Zelfmonco",
+  "description": "Connect your toys to Geometry Dash!",
 
-	"settings": {
-		"death-vibration":{
-			"name": "Death vibration toggle",
-			"description": "Toggle if device will vibrate on death",
-			"type": "bool",
-			"default": true
-		},
+  "settings": {
+    "death-vibration": {
+      "name": "Death vibration toggle",
+      "description": "Toggle if device will vibrate on death",
+      "type": "bool",
+      "default": true
+    },
 
-		"death-vibration-strength":{
-			"name": "Death vibration strength",
-			"description": "Change the intestity of death vibrations",
-			"type": "int",
-			"default": 25,
-			"min": 1,
-			"max": 100,
-			"control": {
-				"slider": true
-			}
-		},
+    "death-vibration-strength": {
+      "name": "Death vibration strength",
+      "description": "Change the intestity of death vibrations",
+      "type": "int",
+      "default": 25,
+      "min": 1,
+      "max": 100,
+      "control": {
+        "slider": true
+      }
+    },
 
-		"death-vibration-length":{
-			"name": "Death vibration length",
-			"description": "Change the length of the vibration on death",
-			"type": "float",
-			"min": 0.01,
-			"max": 4,
-			"default": 0.2,
-			"control": {
-				"slider": true
-			}
-		},
+    "death-vibration-length": {
+      "name": "Death vibration length",
+      "description": "Change the length of the vibration on death",
+      "type": "float",
+      "min": 0.01,
+      "max": 4,
+      "default": 0.2,
+      "control": {
+        "slider": true
+      }
+    },
 
-		"shake-vibration":{
-			"name": "Shake vibration toggle",
-			"description": "Toggle if shake triggers vibrate device",
-			"type": "bool",
-			"default": false
-		},
-		
-		"percentage-vibration":{
-			"name": "Percentage vibration toggle",
-			"description": "Toggle if device will vibrate as the level plays",
-			"type": "bool",
-			"default": false
-		},
+    "shake-vibration": {
+      "name": "Shake vibration toggle",
+      "description": "Toggle if shake triggers vibrate device",
+      "type": "bool",
+      "default": false
+    },
 
-		"complete-vibration":{
-			"name": "Complete vibration toggle",
-			"description": "Toggle if the device will vibrate on completetion of the level",
-			"type": "bool",
-			"default": true
-		},
+    "percentage-vibration": {
+      "name": "Percentage vibration toggle",
+      "description": "Toggle if device will vibrate as the level plays",
+      "type": "bool",
+      "default": false
+    },
 
-		"complete-vibration-strength":{
-			"name": "Complete vibration strength",
-			"description": "Change the intestity of completion vibrations",
-			"type": "int",
-			"min": 1,
-			"max": 100,
-			"default": 25,
-			"control": {
-				"slider": true
-			}
-		}
-	}
+    "complete-vibration": {
+      "name": "Complete vibration toggle",
+      "description": "Toggle if the device will vibrate on completetion of the level",
+      "type": "bool",
+      "default": true
+    },
+
+    "complete-vibration-strength": {
+      "name": "Complete vibration strength",
+      "description": "Change the intestity of completion vibrations",
+      "type": "int",
+      "min": 1,
+      "max": 100,
+      "default": 25,
+      "control": {
+        "slider": true
+      }
+    }
+  }
 }

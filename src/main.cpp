@@ -237,14 +237,13 @@ class $modify(EffectGameObject) {
 		EffectGameObject::triggerObject(p0, p1, p2);
 		auto pl = PlayLayer::get();
 		if (!pl) return;
+
 #ifdef GEODE_IS_MACOS
-		// FIXME: m_shakeStrength is not defined on mac and i don't have a mac to find the offset,
-		// this is always 0.5f for some reason, i wish it was 5.0f as some kind of
-		// "punishment" for mac users
-		float strength = pl->m_gameState.m_cameraShakeFactor;
+		float strength = *reinterpret_cast<float*>(this + 0x5c4);
 #else
 		float strength = this->m_shakeStrength;
 #endif
+
 		if (isVibeShake && strength != 0.f && this->m_duration > 0.f) {
 			// normalize strength to 0-100
 			if (strength > 5.f) strength = 5.f;

@@ -29,7 +29,7 @@ If you have questions or comments about the mod dm me @zelfmonco on Discord
 
 1. Download and install the Geode mod launcher for Android from [https://geode.sdk.org](https://github.com/geode-sdk/android-launcher/releases/download/1.4.1/geode-launcher-v1.4.1.apk) (this link will download a file for you)
 
-2. Open Geometry Dash after installing Geode
+2. Open Geometry Dash after installing Geode through the Geode Launcher
 
 3. Download Geometry Plug from the releases tab on the right side of your screen or by clicking [this link](https://github.com/Zelfmonco/Geometry-Plug/releases/download/update-5/zelfmonco.geometryplug.geode)
 

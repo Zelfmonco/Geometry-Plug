@@ -6,7 +6,6 @@
 #include <Geode/modify/PlayLayer.hpp>
 #include <Geode/modify/EffectGameObject.hpp>
 #include <Geode/cocos/actions/CCActionInterval.h>
-#include <Geode/loader/SettingEvent.hpp>
 #include <Geode/modify/GJBaseGameLayer.hpp>
 #include <Geode/modify/EffectGameObject.hpp>
 #include <string>

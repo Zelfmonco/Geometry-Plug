@@ -6,7 +6,7 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(GEODE_DISABLE_PRECOMPILED_HEADERS ON)
 set(USE_ZLIB OFF)
 
-project(GeometryPlug VERSION 1.0.0)
+project(GeometryPlug VERSION 2.2.0)
 
 # Set up the mod binary
 add_library(${PROJECT_NAME} SHARED

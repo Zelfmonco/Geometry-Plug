@@ -18,7 +18,7 @@ If you have questions or comments about the mod dm me @zelfmonco on Discord
 
 1. Download and install the Geode mod launcher
 
-2. Download Geometry Plug from the releases tab on the right side of your screen or by clicking [this link](https://github.com/Zelfmonco/Geometry-Plug/releases/download/update-6/zelfmonco.geometryplug.geode)
+2. Download Geometry Plug from the releases tab on the right side of your screen or by clicking [this link](https://github.com/Zelfmonco/Geometry-Plug/releases/download/update-6/Geometry.Plug.2.2074.zip)
 
 3. Open the Geode mods folder from the in-game button in the Geode menu and move `zelfmonco.geometryplug.geode` into the mods folder
 

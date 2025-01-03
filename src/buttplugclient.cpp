@@ -33,10 +33,6 @@ void Client::connect(void (*callFunc)(const mhl::Messages)) {
 	webSocket.start();
 	isConnecting = 1;
 
-	// Start a message handler thread and detach it.
-	std::thread messageHandler(&Client::messageHandling, this);
-	messageHandler.detach();
-
 	// Connect to server, specifically send a RequestServerInfo
 	connectServer();
 }
@@ -85,6 +81,11 @@ void Client::callbackFunction(const ix::WebSocketMessagePtr& msg) {
 	// Set atomic variable that websocket is connected once it is open.
 	if (msg->type == ix::WebSocketMessageType::Open) {
 		wsConnected = true;
+
+		// Start a message handler thread and detach it.
+		std::thread messageHandler(&Client::messageHandling, this);
+		messageHandler.detach();
+
 		condWs.notify_all();
 	}
 	

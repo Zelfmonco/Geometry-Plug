@@ -10,7 +10,7 @@ void Logger::logSentMessage(std::string rqType, unsigned int id) {
 	RequestQueue tempQ;
 	tempQ.id = id;
 	tempQ.requestType = rqType;
-	rQueue.push_back(tempQ);
+	rQueue.push_back(tempQ); // CJ_LINK COMMENT
 
 	logFile << elapsed_seconds.count() << " s, Request type sent: " << rqType << ", ID: " << id << std::endl;
 }

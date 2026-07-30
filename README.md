@@ -1,6 +1,6 @@
 # GeometryPlug
 
-## Now compatible with 2.2074
+## Now compatible with 2.2081
 
 ### Windows, MacOS, and Android compatible!
 

@@ -41,6 +41,7 @@ jobs:
           sdk: nightly
           build-config: Release
           target: ${{ matrix.config.target }}
+          configure-args: "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
 
   package:
     name: Package builds

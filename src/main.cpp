@@ -63,33 +63,33 @@ void clientReconnect() {
 
 $execute 
 {
-	listenForSettingChanges("server-url", +[](std::string p0) {
+	listenForSettingChanges<std::string>("server-url", +[](std::string p0) {
 		client.setUrl(p0);
 		clientReconnect();
 	});
 
-	listenForSettingChanges("server-port", +[](int64_t p0) {
+	listenForSettingChanges<int64_t>("server-port", +[](int64_t p0) {
 		client.setPort(std::max<int64_t>(p0, 0));
 		clientReconnect();
 	});
 
-	listenForSettingChanges("invert-level-percentage", +[](bool p0) { invertLevelPercentage = p0; });
+	listenForSettingChanges<bool>("invert-level-percentage", +[](bool p0) { invertLevelPercentage = p0; });
 
-	listenForSettingChanges("death-vibration-with-level-percentage", +[](bool p0) { deathVibeWithLevelPercentage = p0; });
+	listenForSettingChanges<bool>("death-vibration-with-level-percentage", +[](bool p0) { deathVibeWithLevelPercentage = p0; });
 
-	listenForSettingChanges("death-vibration-strength", +[](int64_t p0) { deathVibeStrength = p0; });
+	listenForSettingChanges<int64_t>("death-vibration-strength", +[](int64_t p0) { deathVibeStrength = p0; });
 
-	listenForSettingChanges("shake-vibration", +[](bool p0) { isVibeShake = p0; });
+	listenForSettingChanges<bool>("shake-vibration", +[](bool p0) { isVibeShake = p0; });
 	
-	listenForSettingChanges("death-vibration", +[](bool p0) { IsDeathVibe = p0; });
+	listenForSettingChanges<bool>("death-vibration", +[](bool p0) { IsDeathVibe = p0; });
 
-	listenForSettingChanges("percentage-vibration", +[](bool p0) { IsVibePercent = p0; });
+	listenForSettingChanges<bool>("percentage-vibration", +[](bool p0) { IsVibePercent = p0; });
 
-	listenForSettingChanges("complete-vibration", +[](bool p0) { IsVibeComplete = p0; });
+	listenForSettingChanges<bool>("complete-vibration", +[](bool p0) { IsVibeComplete = p0; });
 
-	listenForSettingChanges("death-vibration-length", +[](double p0) { deathVibeLength = p0; });
+	listenForSettingChanges<double>("death-vibration-length", +[](double p0) { deathVibeLength = p0; });
 
-	listenForSettingChanges("complete-vibration-strength", +[](double p0) { completeVibeStrength = p0; });
+	listenForSettingChanges<double>("complete-vibration-strength", +[](double p0) { completeVibeStrength = p0; });
 }
 
 

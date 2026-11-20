@@ -1,8 +1,8 @@
 # GeometryPlug
 
-## Now compatible with 2.2081
-
+## Now compatible with 2.2091
 Windows, MacOS, and Android compatible!
+currently for Geode v**6.0.0-alpha.3**
 
 Geometry Plug lets you connect your sex toys to Geometry Dash.
 

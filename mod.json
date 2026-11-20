@@ -1,11 +1,11 @@
 {
-  "geode": "5.9.0",
+  "geode": "6.0.0-alpha.3",
   "gd": {
-    "win": "2.2081",
-    "android": "2.2081",
-    "mac": "2.2081"
+    "win": "2.2091",
+    "android": "2.2091",
+    "mac": "2.2091"
   },
-  "version": "v2.3.0",
+  "version": "v2.4.0",
   "id": "zelfmonco.geometryplug",
   "name": "GeometryPlug",
   "developer": "Zelfmonco",

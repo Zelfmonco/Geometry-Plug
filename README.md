@@ -1,7 +1,5 @@
 # GeometryPlug
 
-## Now compatible with 2.2081
-
 ### Windows, MacOS, and Android compatible!
 
 currently for Geode v**6.0.0-alpha.3**

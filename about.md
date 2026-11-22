@@ -1,7 +1,6 @@
 # GeometryPlug
 
-## Now compatible with 2.2081
-
+## Now compatible with 2.2091
 Windows, MacOS, and Android compatible!
 
 Geometry Plug lets you connect your sex toys to Geometry Dash.

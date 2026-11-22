@@ -94,14 +94,12 @@ $execute
 
 
 //connects to server
-int main()
+void connectClient()
 {
 	client.connect(callbackFunction);
 	client.requestDeviceList();
 	client.startScan();
 	client.stopScan();
-	
-	return 0;
 }
 
 //vibrate device at a specified strength
@@ -135,7 +133,7 @@ class $modify(MenuLayer)
 
 		if(!isConnectedToServer)
 		{
-			main();
+			connectClient();
 			isConnectedToServer = true;
 		}
 		return true;
@@ -174,7 +172,7 @@ class $modify(MyPlayerObject, PlayerObject)
 			}
 
 			vibe = true;
-			auto action = pl->runAction(CCSequence::create(CCDelayTime::create(deathVibeLength), CCCallFunc::create(pl, callfunc_selector(MyPlayerObject::StopVibe)), nullptr));
+			auto action = pl->runAction(CCSequence::create(CCDelayTime::create(deathVibeLength), CallFuncExt::create(StopVibrate), nullptr));
 		}
 
 	}
@@ -200,14 +198,14 @@ class $modify(PlayLayer)
 			{
 				VibratePercent(completeVibeStrength);
 				vibe = true;
-				auto action = pl->runAction(CCSequence::create(CCDelayTime::create(2), CCCallFunc::create(pl, callfunc_selector(MyPlayerObject::StopVibe)), nullptr));
+				auto action = pl->runAction(CCSequence::create(CCDelayTime::create(2), CallFuncExt::create(StopVibrate), nullptr));
 			}
 		}
 	}
 
-	bool init(GJGameLevel * p0, bool p1, bool p2)
+	bool init(GJGameLevel * p0, bool p1)
 	{
-		if(!PlayLayer::init(p0, p1, p2))
+		if(!PlayLayer::init(p0, p1))
 			return false;
 		
 		isLevelComplete = false;
@@ -232,16 +230,12 @@ class $modify(PlayLayer)
 class $modify(EffectGameObject) {
 	// GJBaseGameLayer::shakeCamera is inlined on Windows, so we have to detect
 	// a shake trigger like this
-	void triggerObject(GJBaseGameLayer* p0, int p1, const gd::vector<int>* p2) {
+	void triggerObject(GJBaseGameLayer* p0, int p1, std::vector<int> const* p2) {
 		EffectGameObject::triggerObject(p0, p1, p2);
 		auto pl = PlayLayer::get();
 		if (!pl) return;
 
-#ifdef GEODE_IS_MACOS
-		float strength = *reinterpret_cast<float*>(this + 0x5c4);
-#else
 		float strength = this->m_shakeStrength;
-#endif
 
 		if (isVibeShake && strength != 0.f && this->m_duration > 0.f) {
 			// normalize strength to 0-100
@@ -253,7 +247,7 @@ class $modify(EffectGameObject) {
 
 			pl->runAction(CCSequence::create(
 				CCDelayTime::create(this->m_duration),
-				CCCallFunc::create(pl, callfunc_selector(MyPlayerObject::StopVibe)),
+				CallFuncExt::create(StopVibrate),
 				nullptr
 			));
 		}

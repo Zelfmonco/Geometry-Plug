@@ -1,12 +1,13 @@
-cmake_minimum_required(VERSION 3.5)
-set(CMAKE_CXX_STANDARD 20)
+cmake_minimum_required(VERSION 3.21)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64")
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(GEODE_DISABLE_PRECOMPILED_HEADERS ON)
 set(USE_ZLIB OFF)
+set(FMT_MODULE OFF CACHE BOOL "" FORCE)
 
-project(GeometryPlug VERSION 2.3.0)
+project(GeometryPlug VERSION 2.4.0)
 
 # Set up the mod binary
 add_library(${PROJECT_NAME} SHARED
@@ -34,6 +35,7 @@ add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
 # Set up dependencies, resources, link Geode
 setup_geode_mod(${PROJECT_NAME})
 
+set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 find_package(Threads REQUIRED)
 CPMAddPackage("gh:machinezone/IXWebSocket#e03c0be")
 CPMAddPackage(
@@ -41,7 +43,3 @@ CPMAddPackage(
     GITHUB_REPOSITORY nlohmann/json
     VERSION 3.11.2)
 target_link_libraries(${PROJECT_NAME} ixwebsocket::ixwebsocket nlohmann_json::nlohmann_json )
-
-if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET GeometryPlug PROPERTY CXX_STANDARD 11)
-endif()
